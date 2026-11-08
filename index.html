@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GameVault — Discover your next game</title>
+<style>
+:root{--bg:#090b12;--panel:#111522;--panel2:#171d2d;--text:#f4f6ff;--muted:#9aa4ba;--accent:#8b5cf6;--cyan:#36d7e8;--line:#252d40}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% -10%,#292052 0,transparent 38%),var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{max-width:1180px;margin:auto;padding:0 24px}
+header{position:sticky;top:0;z-index:5;background:#090b12dd;backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-size:23px;font-weight:900;letter-spacing:-1px}.brand span{color:var(--cyan)}.navlinks{display:flex;gap:24px;color:var(--muted);font-weight:650}.navlinks a:hover{color:white}
+.pill{border:1px solid #51417e;background:#20183a;color:#d9ccff;border-radius:999px;padding:9px 15px;font-weight:750}
+.hero{padding:76px 0 48px;display:grid;grid-template-columns:1.2fr .8fr;gap:36px;align-items:center}.eyebrow{color:var(--cyan);font-size:12px;font-weight:900;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(42px,6vw,72px);line-height:.98;letter-spacing:-3px;margin:15px 0 18px}.hero p{color:var(--muted);font-size:17px;max-width:570px}.hero-art{min-height:260px;border:1px solid #39305b;border-radius:28px;background:linear-gradient(135deg,#29164c,#172a45 55%,#101522);display:grid;place-items:center;position:relative;overflow:hidden;box-shadow:0 24px 80px #0008}.hero-art:before,.hero-art:after{content:"";position:absolute;border:1px solid #ffffff22;border-radius:50%;width:280px;height:280px}.hero-art:after{width:190px;height:190px}.vault-icon{font-size:100px;filter:drop-shadow(0 12px 25px #0009);z-index:1}
+.searchbar{display:flex;gap:10px;margin-top:26px;max-width:570px}.searchbar input{flex:1;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;color:white;font:inherit;outline:none}.searchbar input:focus{border-color:var(--accent)}button{cursor:pointer;font:inherit}.searchbar button,.primary{background:linear-gradient(120deg,var(--accent),#5c7cff);border:0;color:white;border-radius:12px;padding:0 19px;font-weight:800}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:15px;margin:22px 0 18px}.section-head h2{font-size:25px;margin:0;letter-spacing:-.7px}.section-head p{margin:4px 0 0;color:var(--muted)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}.filter{background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:8px 14px;border-radius:999px;font-weight:700}.filter.active,.filter:hover{background:#2b2050;border-color:#7556c8;color:white}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:transform .2s,border-color .2s}.card:hover{transform:translateY(-4px);border-color:#6851a6}.cover{height:150px;display:grid;place-items:center;font-size:57px;position:relative}.cover small{position:absolute;left:13px;top:12px;background:#090b12aa;padding:5px 9px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:.5px}.c1{background:linear-gradient(135deg,#14532d,#0f766e)}.c2{background:linear-gradient(135deg,#7c2d12,#be185d)}.c3{background:linear-gradient(135deg,#1e3a8a,#581c87)}.c4{background:linear-gradient(135deg,#164e63,#1d4ed8)}.c5{background:linear-gradient(135deg,#713f12,#365314)}.c6{background:linear-gradient(135deg,#3f1d58,#9d174d)}
+.card-body{padding:16px}.card-top{display:flex;justify-content:space-between;gap:10px;align-items:center}.card h3{font-size:18px;margin:0}.genre{color:var(--muted);font-size:12px}.card p{color:var(--muted);font-size:13px;min-height:39px;margin:10px 0 14px}.card-bottom{display:flex;justify-content:space-between;align-items:center}.rating{color:#ffd36a;font-weight:800}.fav{background:var(--panel2);border:1px solid var(--line);color:#cbd2e1;border-radius:9px;padding:7px 10px}.fav.saved{color:#ff83b3;border-color:#85405e}
+.empty{grid-column:1/-1;text-align:center;padding:38px;color:var(--muted);background:var(--panel);border-radius:16px}
+.callout{margin:56px 0 42px;padding:28px;border:1px solid #39305b;border-radius:20px;background:linear-gradient(120deg,#1c1730,#111b2b);display:flex;justify-content:space-between;align-items:center;gap:20px}.callout h2{margin:0 0 6px}.callout p{margin:0;color:var(--muted)}footer{border-top:1px solid var(--line);padding:24px 0 34px;color:var(--muted);font-size:13px}.foot{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+@media(max-width:800px){.hero{grid-template-columns:1fr;padding-top:52px}.hero-art{min-height:190px}.grid{grid-template-columns:repeat(2,1fr)}.navlinks{display:none}}
+@media(max-width:540px){.wrap{padding:0 16px}.grid{grid-template-columns:1fr}.searchbar{flex-direction:column}.searchbar button{padding:13px}.callout{align-items:flex-start;flex-direction:column}.hero{gap:24px}h1{letter-spacing:-2px}}
+</style>
+
+<style>
+.play-card .cover{height:170px}
+.play-card .play-now{margin-top:14px;width:100%;padding:11px;border:0;border-radius:10px;color:white;font-weight:850;background:linear-gradient(120deg,#8b5cf6,#3976ff)}
+.game-overlay{display:none;position:fixed;inset:0;z-index:20;background:#05070df2;backdrop-filter:blur(12px);padding:18px;overflow:auto}
+.game-overlay.open{display:block}
+.game-shell{max-width:1100px;margin:20px auto;background:#101522;border:1px solid #303950;border-radius:20px;overflow:hidden}
+.game-head{padding:17px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #293248}
+.game-head h2{margin:0;font-size:20px}.game-head p{margin:3px 0 0;color:#9aa4ba;font-size:13px}
+.game-actions{display:flex;gap:8px;align-items:center}.game-actions button{background:#20283a;border:1px solid #38435a;color:#fff;padding:9px 12px;border-radius:9px;font-weight:750}
+#gameCanvas{display:block;width:100%;height:min(62vh,600px);min-height:360px;background:#111827;touch-action:none;cursor:crosshair}
+.sandbox-tools{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;background:#0c1220;border-top:1px solid #293248}.sandbox-tools button,.sandbox-tools label{background:#20283a;border:1px solid #38435a;color:#fff;padding:8px 11px;border-radius:9px;font-weight:700}.sandbox-tools input{width:100px;vertical-align:middle}.sandbox-tools .tool-note{color:#aab6cc;font-size:12px;align-self:center;margin-left:auto}
+.game-help{padding:14px 20px;color:#b4bfd2;font-size:13px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.game-hud{color:#fff;font-weight:800}
+@media(max-width:600px){.game-overlay{padding:7px}.game-shell{margin:5px auto}.game-head{align-items:flex-start}.game-head h2{font-size:17px}#gameCanvas{height:55vh}}
+</style>
+
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="#">GAME<span>VAULT</span></a>
+  <nav class="navlinks"><a href="#games">Explore games</a><a href="#saved">My favourites</a><a href="#about">About</a></nav>
+  <a class="pill" href="#games">Explore now ↗</a>
+</div></header>
+<main class="wrap">
+  <section class="hero">
+    <div><div class="eyebrow">Your next adventure starts here</div>
+      <h1>Find your next<br><span style="color:var(--cyan)">great game.</span></h1>
+      <p>Explore games, discover new favourites and build your own little collection. Welcome to GameVault.</p>
+      <form class="searchbar" id="searchForm"><input id="search" type="search" placeholder="Search games..." aria-label="Search games"><button type="submit">Search games</button></form>
+    </div>
+    <div class="hero-art" aria-label="GameVault vault artwork"><div class="vault-icon">🎮</div></div>
+  </section>
+  
+<section id="play">
+  <div class="section-head"><div><h2>Play in the vault</h2><p>Six original games you can play right here in your browser.</p></div><span class="pill">PLAYABLE</span></div>
+  <div class="grid">
+    <article class="card play-card">
+      <div class="cover c3">🚙<small>3D DRIVING</small></div>
+      <div class="card-body"><div class="card-top"><h3>Crash Drive</h3><span class="genre">Physics sandbox</span></div>
+      <p>Drive around a test arena, hit ramps and smash into blocks. Try not to flip your car!</p>
+      <button class="play-now" onclick="openMiniGame('drive')">▶ Play Crash Drive</button></div>
+    </article>
+    <article class="card play-card">
+      <div class="cover c6">🧍<small>RAGDOLL PHYSICS</small></div>
+      <div class="card-body"><div class="card-top"><h3>Ragdoll Lab</h3><span class="genre">3D physics</span></div>
+      <p>Drop a floppy test dummy into the arena, then experiment with bumps and gravity.</p>
+      <button class="play-now" onclick="openMiniGame('ragdoll')">▶ Play Ragdoll Lab</button></div>
+    </article>
+    <article class="card play-card"><div class="cover c1">🧱<small>BUILDING</small></div><div class="card-body"><div class="card-top"><h3>Block Builder</h3><span class="genre">Creative</span></div><p>Place and remove blocks to build your own world.</p><button class="play-now" onclick="openMiniGame('builder')">▶ Play Block Builder</button></div></article>
+    <article class="card play-card"><div class="cover c4">⚽<small>ARCADE SPORTS</small></div><div class="card-body"><div class="card-top"><h3>Goal Rush</h3><span class="genre">Football</span></div><p>Run, kick and score against the clock.</p><button class="play-now" onclick="openMiniGame('goal')">▶ Play Goal Rush</button></div></article>
+    <article class="card play-card"><div class="cover c2">💨<small>SURVIVAL</small></div><div class="card-body"><div class="card-top"><h3>Dodge Arena</h3><span class="genre">Arcade</span></div><p>Dodge falling hazards and beat your best survival time.</p><button class="play-now" onclick="openMiniGame('dodge')">▶ Play Dodge Arena</button></div></article>
+    <article class="card play-card"><div class="cover c5">🎯<small>AIM TRAINER</small></div><div class="card-body"><div class="card-top"><h3>Target Range</h3><span class="genre">Skill</span></div><p>Click moving targets and build your high score.</p><button class="play-now" onclick="openMiniGame('target')">▶ Play Target Range</button></div></article>
+  </div>
+</section>
+
+  <section id="games">
+    <div class="section-head"><div><h2>Explore the vault</h2><p>Pick a game and see what catches your eye.</p></div><span class="pill" id="count">6 games</span></div>
+    <div class="filters" id="filters">
+      <button class="filter active" data-filter="All">All games</button><button class="filter" data-filter="Adventure">Adventure</button><button class="filter" data-filter="Battle Royale">Battle royale</button><button class="filter" data-filter="Sandbox">Sandbox</button><button class="filter" data-filter="Sports">Sports</button><button class="filter" data-filter="Shooter">Shooter</button>
+    </div>
+    <div class="grid" id="gameGrid"></div>
+  </section>
+  <section class="callout" id="about"><div><h2>Make GameVault yours.</h2><p>Save games you like and build your own wishlist.</p></div><a class="pill" href="#saved">View favourites ↓</a></section>
+  <section id="saved"><div class="section-head"><div><h2>Your favourites</h2><p>Games you have saved on this device.</p></div></div><div class="grid" id="savedGrid"><div class="empty">You haven't saved any games yet. Tap ♡ on a game to add it here.</div></div></section>
+
+<div class="game-overlay" id="gameOverlay" role="dialog" aria-modal="true" aria-label="Game window">
+  <div class="game-shell">
+    <div class="game-head">
+      <div><h2 id="gameTitle">GameVault Mini Game</h2><p id="gameSubtitle">Loading 3D world…</p></div>
+      <div class="game-actions"><button id="resetGame">↻ Reset</button><button onclick="closeMiniGame()">✕ Close</button></div>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <div id="sandboxTools" class="sandbox-tools"></div>
+    <div class="game-help"><span id="gameInstructions">Loading controls…</span><span class="game-hud" id="gameHud">Ready</span></div>
+  </div>
+</div>
+
+
+<div id="adminPanel" class="game-overlay" style="display:none;z-index:30" role="dialog" aria-modal="true" aria-label="GameVault admin">
+  <div class="game-shell" style="max-width:900px;max-height:90vh;overflow:auto;padding:22px">
+    <div class="game-head">
+      <div><h2>GameVault Admin</h2><p>Only accounts added as admins in Supabase can manage the vault.</p></div>
+      <div class="game-actions"><button id="closeAdmin">✕ Close</button></div>
+    </div>
+    <div id="adminStatus" style="margin:12px 0;color:var(--muted)">Connect Supabase to enable the admin dashboard.</div>
+    <div id="adminLogin">
+      <label>Email<br><input id="adminEmail" type="email" autocomplete="username" placeholder="Your admin email" style="width:100%;padding:12px;margin:7px 0 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--text)"></label>
+      <label>Password<br><input id="adminPassword" type="password" autocomplete="current-password" placeholder="Your password" style="width:100%;padding:12px;margin:7px 0 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--text)"></label>
+      <button class="play-now" id="adminSignIn">Sign in</button>
+    </div>
+    <div id="adminTools" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0">
+        <h3 style="margin:0">Manage games</h3><button id="adminSignOut">Sign out</button>
+      </div>
+      <form id="gameEditor" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;padding:15px;background:var(--panel);border:1px solid var(--line);border-radius:14px">
+        <input type="hidden" id="editId">
+        <input id="gameName" required maxlength="70" placeholder="Game name">
+        <input id="gameGenre" required maxlength="35" placeholder="Genre (e.g. Sandbox)">
+        <input id="gameEmoji" maxlength="8" placeholder="Emoji (e.g. 🎮)">
+        <input id="gameTag" maxlength="25" placeholder="Small tag (e.g. ADVENTURE)">
+        <input id="gameCover" maxlength="10" placeholder="Cover class (e.g. c1)">
+        <textarea id="gameDesc" required maxlength="240" placeholder="Short description" style="grid-column:1/-1;min-height:75px"></textarea>
+        <div style="grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap"><button class="play-now" type="submit" id="saveGame">Add game</button><button type="button" id="cancelEdit">Clear form</button></div>
+      </form>
+      <div id="adminGameList" style="display:grid;gap:8px;margin-top:15px"></div>
+    </div>
+  </div>
+</div>
+
+</main>
+<footer><div class="wrap foot"><span>© 2026 GameVault. Made for gamers.</span><span>GameVault · <a href="#admin" id="openAdmin" style="color:var(--cyan)">Admin sign in</a></span></div></footer>
+<script>
+let games=[
+{id:1,name:"Minecraft",genre:"Sandbox",desc:"Build, explore and create your own blocky world.",emoji:"⛏️",cover:"c1",tag:"CREATE"},
+{id:2,name:"Fortnite",genre:"Battle Royale",desc:"Drop in, gear up and battle to be the last one standing.",emoji:"🪂",cover:"c2",tag:"COMPETE"},
+{id:3,name:"Grand Theft Auto V",genre:"Adventure",desc:"Explore a huge open world packed with things to do.",emoji:"🚘",cover:"c3",tag:"OPEN WORLD"},
+{id:4,name:"Rocket League",genre:"Sports",desc:"Football meets rocket-powered cars. Score big goals.",emoji:"🚀",cover:"c4",tag:"SPORTS"},
+{id:5,name:"Roblox",genre:"Sandbox",desc:"Discover millions of experiences made by players.",emoji:"🧱",cover:"c5",tag:"DISCOVER"},
+{id:6,name:"Valorant",genre:"Shooter",desc:"Team up and use your abilities in tactical matches.",emoji:"🎯",cover:"c6",tag:"TACTICAL"}
+];
+let active="All",query="";
+let saved=JSON.parse(localStorage.getItem("gamevault-saved")||"[]");
+const grid=document.getElementById("gameGrid"),savedGrid=document.getElementById("savedGrid");
+function miniFor(g){let n=String(g.name).toLowerCase();if(n.includes("minecraft"))return "builder";if(n.includes("fortnite")||n.includes("valorant"))return "dodge";if(n.includes("grand theft")||n.includes("gta"))return "drive";if(n.includes("rocket league"))return "goal";if(n.includes("roblox"))return "ragdoll";return "target"}
+function card(g){return `<article class="card"><div class="cover ${g.cover}"><small>${g.tag}</small>${g.emoji}</div><div class="card-body"><div class="card-top"><h3>${g.name}</h3><span class="genre">${g.genre}</span></div><p>${g.desc}</p><button class="play-now" style="width:100%;padding:10px;margin-bottom:10px" onclick="openMiniGame('${miniFor(g)}')">▶ Play a GameVault mini-game</button><div class="card-bottom"><span class="rating">★ Featured</span><button class="fav ${saved.includes(g.id)?"saved":""}" data-id="${g.id}" aria-label="Toggle favourite">${saved.includes(g.id)?"♥ Saved":"♡ Save"}</button></div></div></article>`}
+function render(){let filtered=games.filter(g=>(active==="All"||g.genre===active)&&(`${g.name} ${g.genre} ${g.desc}`).toLowerCase().includes(query));grid.innerHTML=filtered.length?filtered.map(card).join(""):'<div class="empty">No games found. Try another search or category.</div>';document.getElementById("count").textContent=`${filtered.length} games`;let favourites=games.filter(g=>saved.includes(g.id));savedGrid.innerHTML=favourites.length?favourites.map(card).join(""):'<div class="empty">You haven’t saved any games yet. Tap ♡ on a game to add it here.</div>'}
+document.getElementById("filters").addEventListener("click",e=>{let b=e.target.closest("button[data-filter]");if(!b)return;active=b.dataset.filter;document.querySelectorAll(".filter").forEach(x=>x.classList.toggle("active",x===b));render()});
+document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();query=document.getElementById("search").value.trim().toLowerCase();render();document.getElementById("games").scrollIntoView({behavior:"smooth"})});
+document.addEventListener("click",e=>{let b=e.target.closest("button[data-id]");if(!b)return;let id=Number(b.dataset.id);saved=saved.includes(id)?saved.filter(x=>x!==id):[...saved,id];localStorage.setItem("gamevault-saved",JSON.stringify(saved));render()});
+render();
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/*
+  SETUP: paste your Supabase Project URL and anon/publishable key below.
+  These two values are designed to be public. NEVER put a service_role key here.
+*/
+const GAMEVAULT_SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
+const GAMEVAULT_SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY_HERE";
+
+let gvClient = null;
+let gvAdmin = false;
+const gvConfigured = GAMEVAULT_SUPABASE_URL.startsWith("https://")
+  && !GAMEVAULT_SUPABASE_URL.includes("PASTE_")
+  && !GAMEVAULT_SUPABASE_ANON_KEY.includes("PASTE_");
+
+const adminPanel = document.getElementById("adminPanel");
+const adminStatus = document.getElementById("adminStatus");
+const adminLogin = document.getElementById("adminLogin");
+const adminTools = document.getElementById("adminTools");
+const adminList = document.getElementById("adminGameList");
+
+function safeText(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[ch]));
+}
+function openAdminPanel() {
+  adminPanel.style.display = "flex";
+  if (!gvConfigured) adminStatus.textContent = "Supabase is not connected yet. Follow SETUP.md in the project pack.";
+}
+document.getElementById("openAdmin").addEventListener("click", e => {
+  e.preventDefault(); openAdminPanel();
+});
+document.getElementById("closeAdmin").addEventListener("click", () => adminPanel.style.display = "none");
+
+async function refreshPublicGames() {
+  if (!gvClient) return;
+  const { data, error } = await gvClient.from("games").select("*").order("created_at", {ascending:true});
+  if (error) {
+    console.warn("GameVault games could not be loaded:", error.message);
+    return;
+  }
+  games = (data || []).map(g => ({
+    id: g.id, name: g.name, genre: g.genre, desc: g.description,
+    emoji: g.emoji || "🎮", cover: g.cover_class || "c1", tag: g.tag || "FEATURED"
+  }));
+  render();
+  document.querySelectorAll(".filter").forEach(b => b.classList.toggle("active", b.dataset.filter === "All"));
+  active = "All";
+}
+
+function setAdminMessage(message, isError=false) {
+  adminStatus.textContent = message;
+  adminStatus.style.color = isError ? "#ff8a8a" : "var(--muted)";
+}
+async function checkAdminSession() {
+  if (!gvClient) return;
+  const { data: { session } } = await gvClient.auth.getSession();
+  if (!session) {
+    gvAdmin = false; adminLogin.style.display = "block"; adminTools.style.display = "none";
+    setAdminMessage("Sign in with the email account you added as a GameVault admin.");
+    return;
+  }
+  const { data, error } = await gvClient.rpc("is_gamevault_admin");
+  if (error || data !== true) {
+    gvAdmin = false; adminLogin.style.display = "block"; adminTools.style.display = "none";
+    setAdminMessage("This account is signed in but is not on the GameVault admin list.", true);
+    return;
+  }
+  gvAdmin = true; adminLogin.style.display = "none"; adminTools.style.display = "block";
+  setAdminMessage("Admin access verified. Changes are saved to the online database.");
+  await loadAdminGames();
+}
+async function loadAdminGames() {
+  if (!gvAdmin) return;
+  const { data, error } = await gvClient.from("games").select("*").order("created_at", {ascending:true});
+  if (error) { setAdminMessage(error.message, true); return; }
+  adminList.innerHTML = (data || []).map(g => `
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px">
+      <div><strong>${safeText(g.emoji)} ${safeText(g.name)}</strong><div style="color:var(--muted);font-size:13px">${safeText(g.genre)} · ${safeText(g.description)}</div></div>
+      <div style="display:flex;gap:7px"><button type="button" data-edit="${safeText(g.id)}">Edit</button><button type="button" data-delete="${safeText(g.id)}">Delete</button></div>
+    </div>`).join("") || "<p>No games yet. Add your first one above.</p>";
+  adminList.dataset.rows = JSON.stringify(data || []);
+}
+document.getElementById("adminSignIn").addEventListener("click", async () => {
+  if (!gvClient) return;
+  const email = document.getElementById("adminEmail").value.trim();
+  const password = document.getElementById("adminPassword").value;
+  setAdminMessage("Signing in…");
+  const { error } = await gvClient.auth.signInWithPassword({email, password});
+  if (error) { setAdminMessage(error.message, true); return; }
+  await checkAdminSession();
+});
+document.getElementById("adminSignOut").addEventListener("click", async () => {
+  await gvClient.auth.signOut(); await checkAdminSession();
+});
+document.getElementById("cancelEdit").addEventListener("click", () => {
+  document.getElementById("gameEditor").reset();
+  document.getElementById("editId").value = "";
+  document.getElementById("saveGame").textContent = "Add game";
+});
+adminList.addEventListener("click", async e => {
+  const editButton = e.target.closest("[data-edit]");
+  const deleteButton = e.target.closest("[data-delete]");
+  const rows = JSON.parse(adminList.dataset.rows || "[]");
+  if (editButton) {
+    const g = rows.find(x => x.id === editButton.dataset.edit);
+    if (!g) return;
+    document.getElementById("editId").value = g.id;
+    document.getElementById("gameName").value = g.name;
+    document.getElementById("gameGenre").value = g.genre;
+    document.getElementById("gameEmoji").value = g.emoji || "";
+    document.getElementById("gameTag").value = g.tag || "";
+    document.getElementById("gameCover").value = g.cover_class || "";
+    document.getElementById("gameDesc").value = g.description;
+    document.getElementById("saveGame").textContent = "Save changes";
+    document.getElementById("gameEditor").scrollIntoView({behavior:"smooth"});
+  }
+  if (deleteButton && confirm("Delete this game from GameVault?")) {
+    const { error } = await gvClient.from("games").delete().eq("id", deleteButton.dataset.delete);
+    if (error) setAdminMessage(error.message, true);
+    else { setAdminMessage("Game deleted."); await refreshPublicGames(); await loadAdminGames(); }
+  }
+});
+document.getElementById("gameEditor").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!gvAdmin) return;
+  const id = document.getElementById("editId").value;
+  const payload = {
+    name: document.getElementById("gameName").value.trim(),
+    genre: document.getElementById("gameGenre").value.trim(),
+    emoji: document.getElementById("gameEmoji").value.trim() || "🎮",
+    tag: document.getElementById("gameTag").value.trim() || "FEATURED",
+    cover_class: document.getElementById("gameCover").value.trim() || "c1",
+    description: document.getElementById("gameDesc").value.trim()
+  };
+  const result = id
+    ? await gvClient.from("games").update(payload).eq("id", id)
+    : await gvClient.from("games").insert(payload);
+  if (result.error) { setAdminMessage(result.error.message, true); return; }
+  document.getElementById("gameEditor").reset();
+  document.getElementById("editId").value = "";
+  document.getElementById("saveGame").textContent = "Add game";
+  setAdminMessage(id ? "Game updated." : "Game added.");
+  await refreshPublicGames(); await loadAdminGames();
+});
+
+if (gvConfigured && window.supabase?.createClient) {
+  gvClient = window.supabase.createClient(GAMEVAULT_SUPABASE_URL, GAMEVAULT_SUPABASE_ANON_KEY);
+  refreshPublicGames();
+  gvClient.auth.onAuthStateChange(() => { checkAdminSession(); });
+} else {
+  console.info("GameVault is running in preview mode until Supabase credentials are added.");
+}
+</script>
+
+<script>
+(function(){
+const canvas=document.getElementById('gameCanvas'),ctx=canvas.getContext('2d'),overlay=document.getElementById('gameOverlay'),title=document.getElementById('gameTitle'),sub=document.getElementById('gameSubtitle'),help=document.getElementById('gameInstructions'),hud=document.getElementById('gameHud'),tools=document.getElementById('sandboxTools');
+let game='',W=900,H=520,raf=0,last=0,frame=0,score=0,keys={},rag=[],blocks=[],hazards=[],targets=[],gravity=.42,slow=false,drag=null,pointer={x:0,y:0},car={},player={},ball={};
+const rnd=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function resize(){let r=canvas.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,1.5);W=Math.max(320,r.width);H=Math.max(300,r.height);canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0)}
+function addBtn(t,fn){let b=document.createElement('button');b.textContent=t;b.onclick=fn;tools.appendChild(b)}
+function controls(){tools.innerHTML='';if(game==='ragdoll'){addBtn('＋ Spawn ragdoll',()=>spawn(rnd(100,W-100),90));addBtn('💥 Launch all',()=>rag.forEach(d=>d.nodes.forEach(n=>{n.px=n.x-rnd(-12,12);n.py=n.y-rnd(10,22)})));addBtn('＋ Drop crate',()=>blocks.push({x:rnd(60,W-60),y:20,w:48,h:48,vy:0}));addBtn('Clear dummies',()=>rag=[]);addBtn('Reset arena',reset);let l=document.createElement('label');l.textContent='Gravity ';let i=document.createElement('input');i.type='range';i.min=0;i.max=1.2;i.step=.02;i.value=gravity;i.oninput=()=>gravity=+i.value;l.append(i);tools.append(l);addBtn(slow?'Normal speed':'Slow motion',()=>{slow=!slow;controls()});let n=document.createElement('span');n.className='tool-note';n.textContent='Drag a dummy to grab and throw it';tools.append(n)}else{addBtn('↻ Restart',reset);if(game==='builder')addBtn('Clear build',()=>blocks=[]);if(game==='drive')addBtn('Add crash blocks',()=>{for(let i=0;i<5;i++)blocks.push({x:rnd(70,W-70),y:rnd(60,H-60),w:48,h:48})})}}
+function openMiniGame(which){game=which;overlay.classList.add('open');document.body.style.overflow='hidden';resize();let names={drive:['Crash Drive','Arcade crash arena'],ragdoll:['Ragdoll Sandbox','Spawn, grab, throw and experiment'],builder:['Block Builder','Build anything you can imagine'],goal:['Goal Rush','Run, kick and score'],dodge:['Dodge Arena','Avoid the falling hazards'],target:['Target Range','Click the moving targets']};title.textContent=names[which][0];sub.textContent=names[which][1];help.textContent=({drive:'WASD / arrows to drive · Space = handbrake',ragdoll:'Drag dummies to grab them · click empty space to spawn · R resets',builder:'Click to place blocks · right-click a block to remove it',goal:'WASD / arrows to move · Space to kick the ball',dodge:'WASD / arrows to move · avoid falling blocks',target:'Click moving targets to score'})[which];reset();controls();last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop)}
+function closeMiniGame(){game='';cancelAnimationFrame(raf);overlay.classList.remove('open');document.body.style.overflow='';keys={}}
+window.openMiniGame=openMiniGame;window.closeMiniGame=closeMiniGame;document.getElementById('resetGame').onclick=reset;window.addEventListener('resize',()=>{if(game)resize()});window.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(game&&e.key.toLowerCase()==='r')reset()});window.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+function reset(){score=0;frame=0;rag=[];blocks=[];hazards=[];targets=[];gravity=.42;slow=false;drag=null;car={x:W/2,y:H*.72,a:-Math.PI/2,v:0};player={x:W/2,y:H*.78};ball={x:W/2,y:H*.45,vx:rnd(-2,2),vy:0};if(game==='ragdoll')for(let i=0;i<3;i++)spawn(W/2+(i-1)*110,115);if(game==='drive')for(let i=0;i<14;i++)blocks.push({x:rnd(70,W-70),y:rnd(55,H-55),w:rnd(35,65),h:rnd(35,65)});if(game==='target')for(let i=0;i<6;i++)targets.push({x:rnd(50,W-50),y:rnd(50,H-50),r:20,vx:rnd(-2.5,2.5),vy:rnd(-2,2)});if(game==='dodge')for(let i=0;i<4;i++)hazard();hud.textContent='Ready'}
+function spawn(x,y){let n=(x,y,r)=>({x,y,px:x+rnd(-2,2),py:y+rnd(-2,2),r});rag.push({nodes:[n(x,y-36,14),n(x,y,12),n(x-22,y+12,8),n(x+22,y+12,8),n(x-17,y+43,9),n(x+17,y+43,9),n(x-17,y+78,8),n(x+17,y+78,8)],links:[[0,1,36],[1,2,25],[1,3,25],[2,4,35],[3,5,35],[4,6,35],[5,7,35],[2,3,44],[4,5,34],[0,2,42],[0,3,42]],color:['#a18cff','#42d8e8','#ffae66','#ff78b5'][rag.length%4]})}
+function hazard(){hazards.push({x:rnd(25,W-25),y:-30,w:rnd(24,54),h:rnd(24,54),v:rnd(2,4)})}
+function bg(){let g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#111b32');g.addColorStop(1,'#21143b');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.strokeStyle='#ffffff0b';for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}}
+function floor(){ctx.fillStyle='#25334a';ctx.fillRect(0,H-28,W,28);ctx.fillStyle='#526c8c';ctx.fillRect(0,H-28,W,3)}
+function loop(now){if(!game)return;raf=requestAnimationFrame(loop);let dt=Math.min((now-last)/16.67,2);last=now;if(slow)dt*=.35;frame++;bg();if(game==='ragdoll')ragStep(dt);if(game==='drive')drive(dt);if(game==='builder')builder();if(game==='goal')goal(dt);if(game==='dodge')dodge(dt);if(game==='target')target(dt)}
+function ragStep(dt){floor();ctx.fillStyle='#3a4d6c';ctx.fillRect(W*.12,H-108,W*.24,12);ctx.fillRect(W*.63,H-166,W*.23,12);ctx.fillStyle='#8b5cf6';ctx.beginPath();ctx.moveTo(W*.82,H-28);ctx.lineTo(W*.96,H-28);ctx.lineTo(W*.96,H-115);ctx.fill();for(let b of blocks){b.vy=(b.vy||0)+gravity*dt;b.y+=b.vy*dt;if(b.y+b.h/2>H-28){b.y=H-28-b.h/2;b.vy*=-.5}ctx.fillStyle='#f59e0b';ctx.fillRect(b.x-b.w/2,b.y-b.h/2,b.w,b.h)}for(let d of rag){let ns=d.nodes;for(let p of ns){if(p===drag){p.x=pointer.x;p.y=pointer.y;p.px=p.x;p.py=p.y;continue}let vx=(p.x-p.px)*.992,vy=(p.y-p.py)*.992;p.px=p.x;p.py=p.y;p.x+=vx;p.y+=vy+gravity*dt*dt*2;if(p.y>H-36){p.y=H-36;p.py=p.y+vy*.25}if(p.x<10||p.x>W-10){p.x=clamp(p.x,10,W-10);p.px=p.x}}for(let k=0;k<6;k++)for(let [a,b,len] of d.links){let A=ns[a],B=ns[b],dx=B.x-A.x,dy=B.y-A.y,dist=Math.hypot(dx,dy)||1,q=(dist-len)/dist*.5;A.x+=dx*q;A.y+=dy*q;B.x-=dx*q;B.y-=dy*q}ctx.lineCap='round';ctx.strokeStyle=d.color;ctx.lineWidth=13;for(let [a,b] of [[0,1],[1,2],[1,3],[2,4],[3,5],[4,6],[5,7]]){ctx.beginPath();ctx.moveTo(ns[a].x,ns[a].y);ctx.lineTo(ns[b].x,ns[b].y);ctx.stroke()}ctx.fillStyle='#ffd0a3';ctx.beginPath();ctx.arc(ns[0].x,ns[0].y,ns[0].r,0,7);ctx.fill();ctx.fillStyle=d.color;for(let i=1;i<ns.length;i++){ctx.beginPath();ctx.arc(ns[i].x,ns[i].y,ns[i].r*.55,0,7);ctx.fill()}}hud.textContent='Ragdolls: '+rag.length+' · Gravity: '+gravity.toFixed(2)}
+function drive(dt){for(let b of blocks){ctx.fillStyle='#526584';ctx.fillRect(b.x-b.w/2,b.y-b.h/2,b.w,b.h);ctx.strokeStyle='#a8c1e6';ctx.strokeRect(b.x-b.w/2,b.y-b.h/2,b.w,b.h)}car.v=clamp(car.v+((keys.w||keys.arrowup)?0.22:0)-((keys.s||keys.arrowdown)?0.16:0),-5,8);car.v*=keys[' ']?.88:.992;if(Math.abs(car.v)>.1)car.a+=((keys.a||keys.arrowleft?1:0)-(keys.d||keys.arrowright?1:0))*.055*dt*Math.sign(car.v);car.x=clamp(car.x+Math.cos(car.a)*car.v*dt,24,W-24);car.y=clamp(car.y+Math.sin(car.a)*car.v*dt,24,H-24);for(let b of blocks)if(Math.abs(car.x-b.x)<b.w/2+18&&Math.abs(car.y-b.y)<b.h/2+13)car.v*=-.62;ctx.save();ctx.translate(car.x,car.y);ctx.rotate(car.a);ctx.fillStyle='#151b2a';ctx.fillRect(-24,-16,48,32);ctx.fillStyle='#8b5cf6';ctx.fillRect(-20,-14,40,28);ctx.fillStyle='#63dff0';ctx.fillRect(-7,-11,17,22);ctx.restore();hud.textContent='Speed: '+Math.round(Math.abs(car.v)*24)+' km/h'}
+function builder(){floor();for(let b of blocks){ctx.fillStyle=b.c;ctx.fillRect(b.x-16,b.y-16,32,32);ctx.strokeStyle='#fff9';ctx.strokeRect(b.x-16,b.y-16,32,32)}hud.textContent='Blocks placed: '+blocks.length}
+function goal(dt){floor();player.x=clamp(player.x+(((keys.d||keys.arrowright)?1:0)-((keys.a||keys.arrowleft)?1:0))*4*dt,18,W-18);player.y=clamp(player.y+(((keys.s||keys.arrowdown)?1:0)-((keys.w||keys.arrowup)?1:0))*4*dt,18,H-48);ball.x+=ball.vx*dt;ball.y+=ball.vy*dt;ball.vx*=.995;ball.vy*=.995;if(ball.x<ball.r||ball.x>W-ball.r)ball.vx*=-.85;if(ball.y<ball.r||ball.y>H-28-ball.r)ball.vy*=-.85;let dx=ball.x-player.x,dy=ball.y-player.y;if(Math.hypot(dx,dy)<34&&keys[' ']){let d=Math.hypot(dx,dy)||1;ball.vx=dx/d*9;ball.vy=dy/d*9}ctx.strokeStyle='#8bc5a0';ctx.lineWidth=3;ctx.strokeRect(18,18,W-36,H-54);ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ball.x,ball.y,13,0,7);ctx.fill();ctx.fillStyle='#8b5cf6';ctx.beginPath();ctx.arc(player.x,player.y,16,0,7);ctx.fill();if(ball.y<80&&ball.x>W/2-65&&ball.x<W/2+65){score++;ball.x=W/2;ball.y=H/2;ball.vy=4}hud.textContent='Goals: '+score+' · Space to kick'}
+function dodge(dt){player.x=clamp(player.x+(((keys.d||keys.arrowright)?1:0)-((keys.a||keys.arrowleft)?1:0))*5*dt,18,W-18);player.y=clamp(player.y+(((keys.s||keys.arrowdown)?1:0)-((keys.w||keys.arrowup)?1:0))*5*dt,18,H-40);if(frame%38===0)hazard();for(let h of hazards){h.y+=h.v*dt;ctx.fillStyle='#ff668f';ctx.fillRect(h.x-h.w/2,h.y-h.h/2,h.w,h.h);if(Math.abs(h.x-player.x)<h.w/2+12&&Math.abs(h.y-player.y)<h.h/2+12){score=0;hazards=[];frame=0}}ctx.fillStyle='#45d9e9';ctx.beginPath();ctx.arc(player.x,player.y,14,0,7);ctx.fill();hud.textContent='Survival: '+Math.floor(frame/60)+'s'}
+function target(dt){for(let t of targets){t.x+=t.vx*dt;t.y+=t.vy*dt;if(t.x<t.r||t.x>W-t.r)t.vx*=-1;if(t.y<t.r||t.y>H-t.r)t.vy*=-1;ctx.fillStyle='#ffb15e';ctx.beginPath();ctx.arc(t.x,t.y,t.r,0,7);ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=3;ctx.beginPath();ctx.arc(t.x,t.y,t.r*.55,0,7);ctx.stroke()}hud.textContent='Hits: '+score+' · click targets'}
+canvas.addEventListener('pointerdown',e=>{let r=canvas.getBoundingClientRect();pointer.x=e.clientX-r.left;pointer.y=e.clientY-r.top;if(game==='ragdoll'){let best=null,dist=28;for(let d of rag)for(let n of d.nodes){let q=Math.hypot(n.x-pointer.x,n.y-pointer.y);if(q<dist){best=n;dist=q}}if(best)drag=best;else spawn(pointer.x,pointer.y)}if(game==='builder'){if(e.button===2){let i=blocks.findIndex(b=>Math.abs(b.x-pointer.x)<20&&Math.abs(b.y-pointer.y)<20);if(i>=0)blocks.splice(i,1)}else blocks.push({x:pointer.x,y:pointer.y,c:['#9b83ff','#38d8e8','#ffb45f','#6bd39b'][blocks.length%4]})}if(game==='target'){for(let i=targets.length-1;i>=0;i--){let t=targets[i];if(Math.hypot(t.x-pointer.x,t.y-pointer.y)<t.r){score++;targets[i]={x:rnd(50,W-50),y:rnd(50,H-50),r:20,vx:rnd(-2.5,2.5),vy:rnd(-2,2)};break}}}});canvas.addEventListener('pointermove',e=>{let r=canvas.getBoundingClientRect();pointer.x=e.clientX-r.left;pointer.y=e.clientY-r.top});window.addEventListener('pointerup',()=>drag=null);canvas.addEventListener('contextmenu',e=>e.preventDefault());
+})();
+</script>
+
+</body></html>
